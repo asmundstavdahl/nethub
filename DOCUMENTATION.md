@@ -10,6 +10,9 @@ nethub is a simple TCP packet hub that broadcasts all received packets to all co
 - Go 1.16 or later
 - Network access (TCP port)
 
+### Important Constraints
+**This project uses ONLY the Go standard library.** No third-party modules or external dependencies are allowed. All functionality must be implemented using pure Go standard library packages.
+
 ### Install from source
 
 ```bash
@@ -156,10 +159,39 @@ The monitor updates every interval regardless of traffic activity, ensuring accu
 
 Example display:
 ```
-  2 clients |    15KB /s [min:    5KB /s| max:   42KB /s| avg:   18KB /s]
+  2 clients |    15KB/s [min:    5KB/s| max:   42KB/s| avg:   18KB/s]
 ```
 
-The numbers are left-padded to 5 characters and units are right-padded to 2 characters to prevent any line shifting when values change.
+The display uses color coding for different units:
+- **B** (Bytes): Green
+- **KB** (Kilobytes): Blue  
+- **MB** (Megabytes): Magenta
+- **GB** (Gigabytes): Yellow
+- **TB** (Terabytes): Red
+
+### Smart Display Features
+
+**3-Digit Limit**: All numbers are formatted to never exceed 3 digits using decimal prefixes:
+- `1234 B/s` → `1.2 kB/s` (note lowercase k for decimal kilo)
+- `12345 KB/s` → `12.3 MB/s`
+- `123456 MB/s` → `123 GB/s`
+- `1234567 GB/s` → `1.2 TB/s`
+
+**Verified Behavior**: The formatting logic is thoroughly tested in `misc_test.go` with comprehensive test cases covering:
+- Zero and small values
+- Unit conversion thresholds
+- Decimal precision handling
+- Color coding verification
+- Edge cases and boundary conditions
+
+**Consistent Formatting**: Numbers display with appropriate decimal precision:
+- `100+` → `123` (no decimals)
+- `10-99.9` → `12.3` (1 decimal place)
+- `<10` → `1.23` (2 decimal places)
+
+**Auto-Scaling**: Values automatically convert to the most appropriate unit to keep numbers readable while maintaining the 3-digit limit. The system uses both binary (KB, MB, GB, TB) and decimal (kB) prefixes as needed.
+
+This ensures the display remains clean and readable even with extremely high traffic volumes.
 
 ## Examples
 
@@ -264,6 +296,15 @@ env GOOS=windows GOARCH=amd64 go build -o nethub.exe
 # Cross-compile for Linux ARM
 env GOOS=linux GOARCH=arm go build
 ```
+
+### Dependency Policy
+This project maintains a strict **no third-party dependencies** policy. All features must be implemented using only the Go standard library. This ensures:
+- Maximum compatibility
+- Minimal security surface
+- Easy deployment
+- No dependency management overhead
+
+The ANSI color codes used in the monitoring display are implemented with pure ANSI escape sequences, not external libraries.
 
 ### Testing
 
