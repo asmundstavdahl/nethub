@@ -16,7 +16,7 @@ func parseFlags() {
 	flag.IntVar(&maxReadBytes, "maxread", 2000, "maximum number of bytes to read at once")
 	flag.BoolVar(&argVerbose, "verbose", false, "turn on logging output")
 	flag.BoolVar(&argMonitor, "monitor", false, "turn on traffic monitor")
-	flag.IntVar(&argMonitorInterval, "moninterval", 200, "milliseconds delay for each monitor update")
+	flag.IntVar(&argMonitorInterval, "moninterval", 500, "milliseconds delay for each monitor update")
 	flag.BoolVar(&argQuiet, "quiet", false, "surpress all output except errors")
 
 	flag.Parse()

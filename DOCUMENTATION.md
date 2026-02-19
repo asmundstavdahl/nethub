@@ -131,10 +131,12 @@ type Packet struct {
 
 ### Traffic Monitoring
 
-The monitor displays:
+The monitor displays comprehensive traffic statistics:
 - Number of connected clients
 - Current traffic speed (B/s, KB/s, etc.)
-- Visual traffic bar (ASCII graph)
+- Minimum speed over last minute
+- Maximum speed over last minute
+- Weighted average speed over last minute
 
 Traffic units:
 - B: Bytes (0-999)
@@ -142,6 +144,22 @@ Traffic units:
 - MB: Megabytes (1,000,000-999,999,999)
 - GB: Gigabytes (1,000,000,000-999,999,999,999)
 - TB: Terabytes (1,000,000,000,000+)
+
+The monitoring system maintains a dynamic 1-minute history that automatically adjusts based on the monitor interval setting. The history size is calculated as: `60000ms / monitor_interval = samples`. This ensures statistics always represent the last 60 seconds of activity regardless of the monitoring frequency.
+
+Examples:
+- 250ms interval: 240 samples (60000/250)
+- 500ms interval: 120 samples (60000/500)
+- 1000ms interval: 60 samples (60000/1000)
+
+The monitor updates every interval regardless of traffic activity, ensuring accurate statistics even during periods of no traffic. Units are space-padded to prevent display shifting when values change.
+
+Example display:
+```
+  2 clients |    15KB /s [min:    5KB /s| max:   42KB /s| avg:   18KB /s]
+```
+
+The numbers are left-padded to 5 characters and units are right-padded to 2 characters to prevent any line shifting when values change.
 
 ## Examples
 
