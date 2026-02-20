@@ -27,18 +27,17 @@ nethub [flags]
 
 ## Architecture
 
-Two goroutine types:
-- **acceptClients** (`handleclient.go:48`): Accepts connections, spawns handlers
-- **handleConnection** (`handleclient.go:12`): One per client, reads data and broadcasts
+Two main components:
+- **Accept loop**: Accepts connections, spawns handlers
+- **Connection handler**: One per client, reads data and broadcasts
 
 ### Broadcasting
 
 When a client sends data:
-1. `handleConnection` reads into buffer
-2. Creates `Packet` with sender's channel and data
-3. `Packet.Broadcast()` iterates `clientChannels` list
-4. Sends data to all channels except sender's
-5. Updates global `trafficicity` counter
+1. Connection handler reads into buffer
+2. Creates a packet with sender's channel and data
+3. Broadcasts to all connected channels except sender's
+4. Updates traffic statistics
 
 Each client has a dedicated channel. A write goroutine continuously reads from this channel and writes to the connection.
 
